@@ -14,7 +14,11 @@
     </div>
     <div class="user-info">
       <ul>
-        <li v-for="(item, key) in avatar" :key="key" :class="{ active: index === key }" @click="handClick(key)">
+        <li 
+          v-for="(item, key) in avatar" 
+          :key="key" 
+          :class="{ active: choiceList.includes(key) }" 
+          @click="handClick(key)">
           <img :src="item.src">
           <span class="user-name">{{ item.peo }}</span>
           <div class="select"></div>
@@ -22,7 +26,7 @@
       </ul>
     </div>
     <div>
-      <selectList v-if="index" />
+      <selectList v-if="selectArr.length" to="/user" title="用户" :list="selectArr"/>
    </div>
   </div>
 </template>
@@ -52,11 +56,11 @@
             peo: '演员'
           },
           {
-            src: require('../assets/images/da.png'),
+            src: require('../assets/images/de.png'),
             peo: '小甜甜'
           },
           {
-            src: require('../assets/images/da.png'),
+            src: require('../assets/images/ws.png'),
             peo: '布莱尼'
           },
           {
@@ -64,24 +68,41 @@
             peo: '演员'
           },
           {
-            src: require('../assets/images/da.png'),
+            src: require('../assets/images/de.png'),
             peo: '小甜甜'
           },
           {
-            src: require('../assets/images/da.png'),
+            src: require('../assets/images/ws.png'),
             peo: '布莱尼'
           },
         ],
         index: '',
+        choiceList: [],
+        selectArr: [],
       }
+    },
+    mounted() {
+      console.log(this.list);
     },
     methods: {
       handClick(key){
-        if (this.index === key) {
-          this.index = '';
+        if (this.choiceList.includes(key)) {
+          this.choiceList = this.choiceList.filter(function(ele){
+            return ele != key;
+          });
         } else {
-          this.index = key;
+          this.choiceList.push(key);
+        };
+
+        const _select = [];
+        if (this.choiceList.length) {
+          const { avatar, choiceList } = this;
+          for (let index = 0; index < choiceList.length; index++) {
+            const element = choiceList[index];
+            _select.push(avatar[element]);
+          }
         }
+        this.selectArr = _select;
       }
     },
   }
@@ -160,10 +181,6 @@
           padding-bottom: 10px;
           border-bottom: 1px solid #dddddd;
           position: relative;
-          &::after {
-            content: "";
-            display: block;
-          }
           img {
             width: 40px;
             height: 40px;
@@ -190,7 +207,6 @@
             right: 15px;
             top: 50%;
             margin-top: -12px;
-            // display: none;
             transition: 500ms all;
             opacity: 0;
           }
@@ -202,7 +218,6 @@
               color: #bbbbbb;
             }
             .select {
-              // display: block;
               opacity: 1;
             }
           }

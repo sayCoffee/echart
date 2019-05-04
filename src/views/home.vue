@@ -37,7 +37,12 @@
       </div>
       <div class="kind">
         <ul>
-          <router-link v-for="(v, key) in statistics" :key="key" :to="{ path: v.to }" tag="li" class="kind-list" >
+          <router-link 
+            v-for="(v, key) in statistics" 
+            :key="key" 
+            :to="{ path: v.to }" 
+            tag="li" 
+            class="kind-list" >
             <div :class="['kind-img', v.class ]"></div>
             <div class="kind-tol">{{ v.text }}</div>
           </router-link>
@@ -73,7 +78,7 @@
           {
             class: '',
             text: '按款式统计',
-            to: '/style'
+            to: '/way'
           },
           {
             class: 'pht',
@@ -83,12 +88,12 @@
           {
             class: 'time',
             text: '按日期统计',
-            to: '/style'
+            to: '/day'
           },
           {
             class: 'model',
             text: '按风格统计',
-            to: '/about'
+            to: '/style'
           },
         ]
       }

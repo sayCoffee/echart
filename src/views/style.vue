@@ -1,24 +1,28 @@
 <template>
   <div class="style">
-   <div class="style-title">
-     <div class="title">按风格统计</div>
-     <div class="share">
-      <span>分享次数</span>
-      <i class="el-icon-caret-bottom"></i>
-      <span class="style-select">选择风格</span>
-     </div>
-   </div>
-   <div class="style-list">
-     <ul>
-       <li v-for="(item, key) in styles" :key="key" :class="{ active: table === key }" @click="getClick(key)">
-         <div class="style-kind">{{ item.text }}</div>
-         <div class="chioce"></div>
-       </li>
-     </ul>
-   </div>
-   <div>
-      <selectList v-if="table" />
-   </div>
+    <div class="style-title">
+      <div class="title">按风格统计</div>
+      <div class="share">
+        <span>分享次数</span>
+        <i class="el-icon-caret-bottom"></i>
+        <span class="style-select">选择风格</span>
+      </div>
+    </div>
+    <div class="style-list">
+        <ul>
+          <li 
+            v-for="(item, key) in styles" 
+            :key="key"
+            :class="{ active: chioceList.indexOf(key) !== -1 }"
+            @click="getClick(key)">
+            <div class="style-kind">{{ item.text }}</div>
+            <div class="chioce"></div>
+          </li>
+        </ul>
+    </div>
+    <div>
+      <selectList v-if="chioceArr.length" to="/styles" title="风格" :list="chioceArr" />
+    </div>
   </div>
 </template>
 
@@ -30,40 +34,58 @@
     },
     data() {
       return {
-       styles: [
-         {
-           text: '嘻哈'
-         },
-         {
-           text: '街头'
-         },
-         {
-           text: '日韩'
-         },
-         {
-           text: '性感'
-         },
-         {
-           text: '街拍范'
-         },
-         {
-           text: '休闲运动'
-         },
-         {
-           text: '朋克'
-         }
-       ],
-       table: '',
+        styles: [
+          {
+            text: '嘻哈',
+            id: 1
+          },
+          {
+            text: '街头',
+            id: 2
+          },
+          {
+            text: '日韩',
+            id: 3
+          },
+          {
+            text: '性感',
+            id: 4
+          },
+          {
+            text: '街拍范',
+            id: 5
+          },
+          {
+            text: '休闲运动',
+            id: 6
+          },
+          {
+            text: '朋克',
+            id: 7
+          }
+        ],
+        table: '',
+        chioceList: [],
+        chioceArr: [],
       }
     },
     methods: {
       getClick(key){
-        if(this.table === key){
-          this.table = '';
+        if (this.chioceList.indexOf(key) === -1) {
+          this.chioceList.push(key);
         } else {
-         this.table = key;
+          this.chioceList.splice(this.chioceList.indexOf(key), 1);
         }
         
+        const _arr = [];
+        if (this.chioceList.length) {
+          const { styles, chioceList } = this;
+          for (let index = 0; index < chioceList.length; index++) {
+            const element = chioceList[index];
+            _arr.push(styles[element]);
+          }
+        }
+        this.chioceArr = _arr;
       }
     }
   }
@@ -120,12 +142,9 @@
             right: 15px;
             top: 50%;
             margin-top: -12px;
-            transition: 500ms all;
+            margin-right: 0;
+            transition: all 500ms;
             opacity: 0;
-          }
-          &::after {
-            content: "";
-            display: block;
           }
           &.active {
             .style-kind {
