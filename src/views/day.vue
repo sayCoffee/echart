@@ -25,8 +25,12 @@
           </li>
           <li 
             v-for="(v, key) in item.day" 
-            :key="key" 
-            :style="{ height: `${dayHeight}px`, lineHeight: `${dayHeight - 20}px` }">
+            :key="`${item.month}_${key}`"
+            :style="{ height: `${dayHeight}px`, lineHeight: `${dayHeight - 20}px` }"
+            :class="{ start: startTime.join('') === `${item.year}${formatDay(item.month)}${formatDay(v)}`, end: endTime.join('') === `${item.year}${formatDay(item.month)}${formatDay(v)}`, active: (startTime.join('') < `${item.year}${formatDay(item.month)}${formatDay(v)}` && endTime.join('') > `${item.year}${formatDay(item.month)}${formatDay(v)}`) }"
+            @click="getDay(item.year, formatDay(item.month), formatDay(v))">
+            <div class="day-start">起初</div>
+            <div class="day-end">结束</div>
             <p>{{ v }}</p>
           </li>
         </ul>
@@ -68,11 +72,8 @@
         ],
         dayHeight: 30,
         dayList: null,
-        // dayList: [
-        //   { year: 2019, month: 1, day: 31 },
-        //   { year: 2019, month: 2, day: 28 },
-        //   { year: 2019, month: 3, day: 30 },
-        // ],
+        startTime: [],
+        endTime: [],
       }
     },
     mounted() {
@@ -107,6 +108,25 @@
       getMonthDays(year, month){
         var thisDate = new Date(year, month, 0); // 当天数为0 js自动处理为上一月的最后一天
         return thisDate.getDate();
+      },
+      formatDay(v) {
+        return v < 10 ? `0${v}` : `${v}`;
+      },
+      getDay(year, month, day) {
+        const { startTime, endTime } = this;
+        const _star = startTime.join('');
+        const _end = `${year}${month}${day}`;
+        if (!startTime.length) {
+          this.startTime = [year, month, day];
+        } else if (_star < _end) {
+          this.endTime = [year, month, day];
+        } else if (_star > _end) {
+          this.endTime = startTime;
+          this.startTime = [year, month, day];
+        } else if (_star === _end) {
+          this.startTime = [];
+          this.endTime = [];
+        }
       }
     }
   }
@@ -164,19 +184,53 @@
           z-index: 2;
           li {
             float: left;
-            padding: 10px;
+            padding: 15px 10px 5px;
             width: 14.2%;
             line-height: 30px;
             text-align: center;
             box-sizing: border-box;
+            position: relative;
             p {
               width: 100%;
               height: 100%;
               border-radius: 50%;
+              transition: all 300ms;
+              background-color: transparent;
             }
-            &:nth-child(2) {
+            .day-start,
+            .day-end {
+              opacity: 0;
+              font-size: 12px;
+              color: #888888;
+              position: absolute;
+              line-height: 12px;
+              top: 10px;
+              left: 0;
+              right: 0;
+              transition: all 300ms;
+            }
+            &.start {
               p {
                 background-color: #ffdc1a;
+              }
+              .day-start {
+                top: 0;
+                opacity: 1;
+              }
+            }
+            &.end {
+              p {
+                background-color: #ffdc1a;
+              }
+              .day-end {
+                top: 0;
+                opacity: 1;
+              }
+            }
+            &.active {
+              p {
+                background-color: #ffdc1a;
+                opacity: 0.3;
               }
             }
           }
